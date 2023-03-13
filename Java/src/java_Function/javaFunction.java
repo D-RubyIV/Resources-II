@@ -25,5 +25,5 @@ public class javaFunction {
 		int mul = a * b;
 		return mul;
 	}
-
+	
 }
