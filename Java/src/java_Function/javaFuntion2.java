@@ -24,7 +24,7 @@ class SinhVien{
 		System.out.println("Đây là hàm tạo của " + Ten);
 	}
 	public SinhVien(){
-		System.out.println("Đây là hàm tạo của");
+		System.out.println("Đây là hàm tạo");
 	}
 	public void DiHoc(){
 		System.out.println("Tôi ĐI Học");
