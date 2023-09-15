@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <link
+            href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
+            rel='stylesheet'>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+            crossorigin="anonymous">
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+        <script src="https://unpkg.com/boxicons@2.1.4/dist/boxicons.js"></script>
+        <title>Document</title>
+    </head>
+    <body>
+        <div class="container">
+            <div>
+                <b>Account</b>
+                <div class="pad">
+                    <div>Name: <label for></label></div>
+                    <div>Balance: <label for></label></div>
+                </div>
+            </div>
+
+            <div>
+                <b>Product</b>
+                <div class="row row-column">
+                    <div class="col col-product" th:each="product: ${listProduct}">
+                        <div class="item">
+                            <img src="zyro-image.ico" alt class="img" th:if="${product.image}" th:src="@{'data:image/jpeg;base64,' + ${product.image}}">
+                            <div class="info-item">
+                                <div><label for class="nameProduct" th:text="${product.name}">HyperTele</label></div>
+                                <div>Price: <label for class="priceProduct" th:text="${product.unitPrice}">50</label>[D]</div>
+                                <div>Quantity: <label for class="" th:text="${product.quantity}">10</label></div>
+                                <div>
+                                    <a class="btn btn-sm" href="#">
+                                        <box-icon
+                                            name='info-circle'
+                                            class="icon-btn">
+                                        </box-icon>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+    <footer>
+        Coryright: Dion
+    </footer>
+</html>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+    }
+    :root{
+        --pad : 50px;
+        --pad-2: 50px 0px;
+        --pad-3: 0px 50px
+    }
+    footer{
+        background-color: orange;
+        color: black;
+        font-size: small;
+        font-weight: bold;
+        text-align: center;
+        padding: 5px;
+    }
+    .img{
+        width: 60%;
+        aspect-ratio: 1/1;
+        border-radius: 50%;
+    }
+    body{
+        color: white;
+        background-color: #18191a;
+    }
+    .pad{
+        padding: var(--pad-3);
+    }
+    .container{
+        padding: var(--pad);
+        width: 100%;
+        max-width: 1200px;
+        background-color: #18191a;
+    }
+    .row-column{
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+    }
+    .col-product>div{
+        margin: 10px 20px;
+        background-color: #242526;
+        border-radius: 8px;
+    }
+    .item{
+        padding: 20px 0;
+        margin: 0 auto;
+        text-align: center;
+        border-radius: 8px;
+        aspect-ratio: 4/7;
+    }
+    .info-item{
+        font-size: 12px;
+        font-weight: 400;
+    }
+    .btn{
+        background-color: orange;
+        padding: 0;
+        width: 60px;
+        height: 25px;
+        font-size: 10px;
+        /* aspect-ratio: 4/1; */
+    }
+    .icon-btn{
+        text-align: center;
+        margin: auto 0;
+        width: 20px;
+    }
+    @media screen and (max-width: 1024px) {
+        .row-column{
+            grid-template-columns: repeat(4, 1fr);
+        }
+    
+    }
+    @media screen and (max-width: 767px) {
+        .row-column{
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .col-product>div{
+            margin: 10px 0px;
+            background-color: #242526;
+            border-radius: 8px;
+        }
+        .info-item{
+            font-size: 11px;
+            font-weight: 400;
+        }
+    }
+    @media screen and (max-width: 500px) {
+        .row-column{
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+    
+    }
+</style>
