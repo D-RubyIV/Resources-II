@@ -1,24 +1,37 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.auth.AuthDto;
+import com.example.demo.impl.UserEntityService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
+import java.util.stream.Collectors;
 
-@RestController
+@RestController()
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 public class AuthController {
 
-    @GetMapping("/login")
-    public String login(){
-        return "Login from public endpoint";
+    @Autowired
+    private UserEntityService userEntityService;
+
+    @GetMapping("/hello")
+    public String hello(){
+        return "Hello";
     }
 
-    @PostMapping("/register")
-    public String register(){
-        return "Register from public endpoint";
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@Valid @RequestBody AuthDto authDto, BindingResult bindingResult){
+        if (bindingResult.hasErrors()){
+            return new ResponseEntity<>(bindingResult.getAllErrors(), HttpStatus.BAD_REQUEST);
+        }
+        else {
+            return userEntityService.login(authDto);
+        }
+
     }
 }

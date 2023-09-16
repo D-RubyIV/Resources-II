@@ -1,56 +1,61 @@
 package com.example.demo.config;
 
+import com.example.demo.config.jwt.JwtEntryPoint;
+import com.example.demo.config.jwt.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.util.AntPathMatcher;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
-import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
+
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
+    @Autowired
+    private JwtFilter jwtFilter;
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
-		MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector).servletPath("/path");
-		http
-				.csrf(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(authorize -> authorize
-						.requestMatchers(mvcMatcherBuilder.pattern("/auth")).permitAll()
-						.anyRequest().authenticated()
-				).formLogin(withDefaults());
-		return http.build();
-	}
+    @Autowired
+    private JwtEntryPoint jwtEntryPoint;
 
-	@Bean
-    public UserDetailsService users() {
-        UserDetails user = User.builder()
-                .username("user").password("{bcrypt}$2a$10$bK6sXhdc9kYXh/fnLRcPXeqBjhy.9X..TmnPnORIYhcmRXOaHWEWC").roles("USER").build();
-        UserDetails admin = User.builder()
-                .username("admin").password("{noop}123").roles("USER", "ADMIN").authorities("Admin").build();
-        return new InMemoryUserDetailsManager(user, admin);
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(AbstractHttpConfigurer::disable);
+        http.sessionManagement(ss -> ss.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+//        http.exceptionHandling(handle -> handle.authenticationEntryPoint(jwtEntryPoint));
+        http.authorizeHttpRequests(auth -> auth
+                // * AUTH
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/auth/**")).permitAll()
+                .requestMatchers(AntPathRequestMatcher.antMatcher("/login")).permitAll()
+                // * OTHER
+                .anyRequest().authenticated()
+        );
+        http.formLogin((formLogin) ->
+                formLogin
+                        .loginPage("/login")
+                        .failureUrl("/login?failed")
+                        .loginProcessingUrl("/auth/hello")
+        );
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
 
-	@Bean
-	public PasswordEncoder passwordEncoder(){
-		return new BCryptPasswordEncoder();
-	}
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
 }
